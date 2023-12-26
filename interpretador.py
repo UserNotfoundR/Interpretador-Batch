@@ -42,7 +42,7 @@ def executar_codigo():
 
 # Criar janela
 janela = tk.Tk()
-janela.title("Executor de Scripts Batch")
+janela.title("Interpretador Batch")
 
 # Entrada para o código
 label_codigo = tk.Label(janela, text="Digite o código:")
