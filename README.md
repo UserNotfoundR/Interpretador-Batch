@@ -1,4 +1,4 @@
-# Interpretador-para-.bat
+# Interpretador Batch
 
 # interface Gráfica (GUI):
 
