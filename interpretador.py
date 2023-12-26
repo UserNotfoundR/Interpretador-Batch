@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import scrolledtext
 import threading
 import os
+import time
 
 def executar_codigo():
     def thread_executar():
@@ -13,26 +14,23 @@ def executar_codigo():
             with open("temp_batch_file.bat", "w") as batch_file:
                 batch_file.write(codigo)
 
-            # Executar o arquivo batch
-            processo_start = subprocess.Popen(f'start cmd /c temp_batch_file.bat', stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
-            saida_start, _ = processo_start.communicate()
+            # Executar o arquivo batch em uma nova janela do prompt
+            processo = subprocess.run('start cmd /c temp_batch_file.bat', capture_output=True, text=True, shell=True)
 
-            if processo_start.returncode != 0:
-                # Se o processo retornar um código diferente de 0, significa que ocorreu um erro
-                raise subprocess.CalledProcessError(processo_start.returncode, cmd=f'start cmd /c {codigo}')
+            # Obter a saída do comando
+            saida_type = processo.stdout
 
             text_saida.delete("1.0", tk.END)
-            text_saida.insert(tk.END, f"Saida do codigo: {saida_start}")
+            text_saida.insert(tk.END, f"Saida do codigo:\n{saida_type}\n")
 
-        except subprocess.CalledProcessError as e:
+        except Exception as e:
+            # Exibir erros na área de texto
             text_saida.delete("1.0", tk.END)
             text_saida.insert(tk.END, f"Erro durante a execução: {e}")
 
-        except Exception as e:
-            text_saida.delete("1.0", tk.END)
-            text_saida.insert(tk.END, f"Erro inesperado: {e}")
-
         finally:
+            # Adicionar um atraso antes de remover o arquivo batch temporário
+            time.sleep(5)  # Ajuste conforme necessário
             # Remover o arquivo batch temporário
             os.remove("temp_batch_file.bat")
 
@@ -40,12 +38,9 @@ def executar_codigo():
     thread = threading.Thread(target=thread_executar)
     thread.start()
 
-# Restante do código permanece inalterado
-
-
 # Criar janela
 janela = tk.Tk()
-janela.title("Interpretador")
+janela.title("Executor de Scripts Batch")
 
 # Entrada para o código
 label_codigo = tk.Label(janela, text="Digite o código:")
